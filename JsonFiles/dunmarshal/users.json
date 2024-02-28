@@ -1,0 +1,36 @@
+{
+    "users" : [
+        {
+            "name" : "Alex",
+            "type" : "Admin",
+            "age" : 32,
+            "social" : {
+                "vkontakte" : "https://vk.com/id=123512"
+            }
+        },
+        {
+            "name" : "Bob",
+            "type" : "Regular",
+            "age" : 12,
+            "social" : {
+                "vkontakte" : "https://vk.com/id=123561235"
+            }
+        },
+        {
+            "name" : "Alice",
+            "type" : "Regular",
+            "age" : 19,
+            "social" : {
+                "vkontakte" : "https://vk.com/id=12123123"
+            }
+        },
+        {
+            "name" : "George",
+            "type" : "Regular",
+            "age" : 42,
+            "social" : {
+                "vkontakte" : "https://vk.com/id=999999"
+            }
+        }
+    ]
+}
