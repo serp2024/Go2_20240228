@@ -27,7 +27,7 @@ func main() {
 	fmt.Println("-----------")
 	body, _ := io.ReadAll(resOne.Body)
 	resOne.Body.Close()
-	file, err := os.Create("out_site.txt")
+	file, err := os.Create("out_site2.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
