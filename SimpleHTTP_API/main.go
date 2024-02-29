@@ -22,7 +22,12 @@ func main() {
 	http.HandleFunc("/", GetGreet) // Если придет запрос на адрес "/", то вызывай GetGreet
 	http.HandleFunc("/ping", zPing)
 	// Запуск сервера в консоли: SERVERPORT=5000 go run .
-	fmt.Println("help run:  SERVERPORT=5000 go run . ")
-	fmt.Println("0.0.0.0:" + os.Getenv("SERVERPORT"))
-	log.Fatal(http.ListenAndServe("0.0.0.0:"+os.Getenv("SERVERPORT"), nil)) // Запускаем web-сервер в режиме "слушания"
+	fmt.Println("help run:  \" SERVERPORT=5000 go run . \"")
+	zPort := os.Getenv("SERVERPORT1")
+	if zPort == "" {
+		zPort = "8888"
+	}
+
+	fmt.Println("Started at 0.0.0.0:" + zPort)
+	log.Fatal(http.ListenAndServe("0.0.0.0:"+zPort, nil)) // Запускаем web-сервер в режиме "слушания"
 }
