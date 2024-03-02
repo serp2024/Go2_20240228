@@ -42,23 +42,15 @@ import (
 )
 
 type ztCalc struct {
-	First     int
-	Second    int
-	Operation string
-	Result    float64
-	ResultTxt string
+	First     int    `json:"first"`
+	Second    int    `json:"second"`
+	Operation string `json:"operation"`
+	Result    string `json:"result"`
+	ResultTxt string `json:"result_txt"`
 }
 
-// type ztCalc struct {
-// 	First     int    `json:"first"`
-// 	Second    int    `json:"second"`
-// 	Operation string `json:"operation"`
-// 	Result    int    `json:"result"`
-// 	ResultTxt string `json:"result_txt"`
-// }
-
 func main() {
-	zLog("help run:   SERVERPORT=1234 go run . \n")
+	zLog("help run:   SERVERPORT=8888 go run . \n")
 	zPort := os.Getenv("SERVERPORT")
 	if zPort == "" {
 		zPort = "1234"
@@ -82,36 +74,26 @@ func zCalcBegin(w http.ResponseWriter, r *http.Request, zRCalc *ztCalc) {
 	zLog("zCalcBegin ")
 	if r.Header.Get("Content-Type") == "application/json" {
 		decoder := json.NewDecoder(r.Body)
-		//decoder.DisallowUnknownFields()
 		err := decoder.Decode(&zRCalc) // заполнение из прилетевшего от клиента json-a в переменную  zRCalc (zReq)
 		if err != nil {
 			zErrorResponse(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		}
-		//zRCalc.ResultTxt = ""
 	}
+
+	// cookie для работоспособности апи-шки в браузере
 	calc2cookie_str, err := r.Cookie("calc2cookie")
 	if err == nil {
-
-		//zRCalc = calc2cookie.Value
-		//json.Unmarshal([]byte(calc2cookie_str.Value), zRCalc)
-		//json.Unmarshal(calc2cookie_str.Value, zRCalc)
 		calc2cookie_bytes, _ := base64.StdEncoding.DecodeString(calc2cookie_str.Value)
 		json.Unmarshal(calc2cookie_bytes, zRCalc)
 	}
 
-	// w.Header().Set("Content-Type", "application/json")
 }
 
 // zSendRes отправка ответа в body для API  и дублем в cookie для возможности пользоваться в браузере
 func zSendRes(w http.ResponseWriter, zCalc ztCalc) {
 	zLog("zSendRes ")
-	// json.NewEncoder(w).Encode(zCalc)
-	//zCalc2 := "" + zCalc.ResultTxt
-	//cookie := http.Cookie{Name: "calc2", Value: "rewqrwe", Path: "/", MaxAge: 3600}
-	//	http.SetCookie(w, &cookie)
 	calc2cookie_bytes, err := json.Marshal(zCalc)
 	if err == nil {
-		//		calc2cookie_str := string(calc2cookie)
 		calc2cookie_str := base64.StdEncoding.EncodeToString(calc2cookie_bytes)
 		cookie := http.Cookie{
 			Name:     "calc2cookie",
@@ -181,22 +163,27 @@ func zCalculate(zCalc *ztCalc) {
 	zLog("zCalculate ")
 	switch zCalc.Operation {
 	case "add":
-		zCalc.Result = float64(zCalc.First) + float64(zCalc.Second)
-		zCalc.ResultTxt += strconv.Itoa(zCalc.First) + "+" + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result)
+		zCalc.Result = fmt.Sprint(float64(zCalc.First) + float64(zCalc.Second))
+		zCalc.ResultTxt += " " + strconv.Itoa(zCalc.First) + " + " + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result) + " "
 	case "sub":
-		zCalc.Result = float64(zCalc.First) - float64(zCalc.Second)
-		zCalc.ResultTxt += strconv.Itoa(zCalc.First) + "-" + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result)
+		zCalc.Result = fmt.Sprint(float64(zCalc.First) - float64(zCalc.Second))
+		zCalc.ResultTxt += " " + strconv.Itoa(zCalc.First) + " - " + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result) + " "
 	case "mul":
-		zCalc.Result = float64(zCalc.First) * float64(zCalc.Second)
-		zCalc.ResultTxt += strconv.Itoa(zCalc.First) + "*" + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result)
+		zCalc.Result = fmt.Sprint(float64(zCalc.First) * float64(zCalc.Second))
+		zCalc.ResultTxt += " " + strconv.Itoa(zCalc.First) + " * " + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result) + " "
 	case "div":
-		zCalc.Result = float64(zCalc.First) / float64(zCalc.Second)
-		zCalc.ResultTxt += strconv.Itoa(zCalc.First) + "/" + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result)
+		if zCalc.Second != 0 {
+			zCalc.Result = fmt.Sprint(float64(zCalc.First) / float64(zCalc.Second))
+			zCalc.ResultTxt += " " + strconv.Itoa(zCalc.First) + " / " + strconv.Itoa(zCalc.Second) + " = " + fmt.Sprint(zCalc.Result) + " "
+		} else {
+			zCalc.Result = ""
+			zCalc.ResultTxt += " " + strconv.Itoa(zCalc.First) + " / " + strconv.Itoa(zCalc.Second) + " ??? division by zero is not possible "
+		}
 	case "":
-		zCalc.Result = 0
+		zCalc.Result = ""
 		zCalc.ResultTxt += " skip calc (operation not set) "
 	default:
-		zCalc.Result = 0
+		zCalc.Result = ""
 		zCalc.ResultTxt += " operation not supported "
 	}
 }
@@ -214,7 +201,7 @@ func zErrorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
 func zLog(txt string) {
 	vCurrTime := time.Now()
 	if txt != ".\n" {
-		fmt.Print(" ; ", vCurrTime.Format("15:04:05.00000"), " ")
+		fmt.Print(" ; ", vCurrTime.Format("15:04:05.000"), " ")
 	}
 	fmt.Print(txt)
 }
@@ -224,9 +211,9 @@ func zGetRandomIntRange(min, max int) int {
 }
 
 func zGetRandomInt() int {
-	vRes := zGetRandomIntRange(1, 9)
-	zLog("zGetRandomInt " + strconv.Itoa(vRes))
-	return vRes
+	zRes := zGetRandomIntRange(0, 100)
+	zLog("zGetRandomInt " + strconv.Itoa(zRes))
+	return zRes
 }
 
 func zHome(w http.ResponseWriter, r *http.Request) {
@@ -252,7 +239,6 @@ func zfavicon(w http.ResponseWriter, r *http.Request) {
 	zLog("zfavicon")
 	//w.WriteHeader(http.StatusNotFound)
 	w.Header().Set("Content-Type", "image/x-icon") //"image/vnd.microsoft.icon")
-	//const sample = "\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
 	zIco := "\x00\x00\x01\x00\x01\x00\x10\x10\x10\x00\x01\x00\x04\x00\x28\x01\x00\x00\x16\x00\x00\x00\x28\x00\x00\x00\x10\x00\x00\x00\x20\x00\x00\x00\x01\x00\x04\x00\x00\x00\x00\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00\xFF\xFF\x00\x00"
 	w.Write([]byte(zIco))
 	zLog(".\n")
