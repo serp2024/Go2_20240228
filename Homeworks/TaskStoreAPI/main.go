@@ -14,7 +14,7 @@ import (
 	"os"
 	"time"
 
-	"./taskstore/"
+	"github.com/serp2024/Homeworks/TaskStoreAPI/taskstore.go"
 
 	"github.com/gorilla/mux"
 )
