@@ -45,7 +45,7 @@ type ztCalc struct {
 	First     int    `json:"first"`
 	Second    int    `json:"second"`
 	Operation string `json:"operation"`
-	Result    string `json:"result"`
+	Result    string `json:"result"` // в клиенте надо парсить как float64 , строка т.к.  если "Result    int"  то  "zCalc.Result = nil" ( или так zCalc.First = nil )  выдает ошибку
 	ResultTxt string `json:"result_txt"`
 }
 
@@ -70,11 +70,11 @@ func main() {
 }
 
 // zCalcBegin для ответа set Content-Type=application/json  и  заполнение из прилетевшего от клиента json-a в переменную zReq
-func zCalcBegin(w http.ResponseWriter, r *http.Request, zRCalc *ztCalc) {
+func zCalcBegin(w http.ResponseWriter, r *http.Request, zCalc *ztCalc) {
 	zLog("zCalcBegin ")
 	if r.Header.Get("Content-Type") == "application/json" {
 		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&zRCalc) // заполнение из прилетевшего от клиента json-a в переменную  zRCalc (zReq)
+		err := decoder.Decode(&zCalc) // заполнение из прилетевшего от клиента json-a в переменную  zRCalc (zReq)
 		if err != nil {
 			zErrorResponse(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		}
@@ -84,7 +84,7 @@ func zCalcBegin(w http.ResponseWriter, r *http.Request, zRCalc *ztCalc) {
 	calc2cookie_str, err := r.Cookie("calc2cookie")
 	if err == nil {
 		calc2cookie_bytes, _ := base64.StdEncoding.DecodeString(calc2cookie_str.Value)
-		json.Unmarshal(calc2cookie_bytes, zRCalc)
+		json.Unmarshal(calc2cookie_bytes, zCalc)
 	}
 
 }
