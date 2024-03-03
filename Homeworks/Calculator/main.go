@@ -114,7 +114,8 @@ func zSendRes(w http.ResponseWriter, zCalc ztCalc) {
 func zFirst(w http.ResponseWriter, r *http.Request) {
 	zLog("zFirst ")
 	var zCalc ztCalc
-	zCalcBegin(w, r, &zCalc)
+	zCalc.First =
+		zCalcBegin(w, r, &zCalc)
 	zCalc.ResultTxt = "set first random. "
 	zCalc.First = zGetRandomInt()
 	zCalculate(&zCalc)
