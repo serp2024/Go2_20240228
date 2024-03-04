@@ -1,9 +1,0 @@
-{
-   "name": "Bob",
-   "science_id": 81263123,
-   "is_working": true,
-   "university": {
-      "name": "BMSTU",
-      "city": "Moscow"
-   }
-}

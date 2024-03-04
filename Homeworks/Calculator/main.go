@@ -121,7 +121,7 @@ func zFirst(w http.ResponseWriter, r *http.Request) {
 	zCalculate(&zCalc)
 	zSendRes(w, zCalc)
 	zLog(".\n")
-}
+} 
 
 func zSecond(w http.ResponseWriter, r *http.Request) {
 	zLog("zSecond ")
