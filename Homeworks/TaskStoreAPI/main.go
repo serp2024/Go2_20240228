@@ -14,9 +14,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/serp2024/Homeworks/TaskStoreAPI/taskstore.go"
+	//	"github.com/serp2024/Homeworks/TaskStoreAPI/taskstore.go"
 
 	"github.com/gorilla/mux"
+	taskstore "github.com/serp2024/go2/Homeworks/TaskStoreAPI/TaskStoreAPIMod"
 )
 
 func main() {
