@@ -55,6 +55,7 @@ func main() {
 	if zPort == "" {
 		zPort = "1234"
 	}
+
 	zHostPort := "0.0.0.0:" + zPort
 	http.HandleFunc("/favicon.ico", zfavicon) // favicon for test from  chrome
 	http.HandleFunc("/", zHome)               // Информация об API
@@ -114,8 +115,7 @@ func zSendRes(w http.ResponseWriter, zCalc ztCalc) {
 func zFirst(w http.ResponseWriter, r *http.Request) {
 	zLog("zFirst ")
 	var zCalc ztCalc
-	zCalc.First =
-		zCalcBegin(w, r, &zCalc)
+	zCalcBegin(w, r, &zCalc)
 	zCalc.ResultTxt = "set first random. "
 	zCalc.First = zGetRandomInt()
 	zCalculate(&zCalc)
@@ -200,6 +200,7 @@ func zErrorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
 }
 
 func zLog(txt string) {
+
 	vCurrTime := time.Now()
 	if txt != ".\n" {
 		fmt.Print(" ; ", vCurrTime.Format("15:04:05.000"), " ")
