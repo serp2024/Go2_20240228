@@ -3,7 +3,5 @@ go 1.22.0
 use (
 	.
 	./Homeworks/Calculator
-	./JsonFiles
-	./SimpleHTTP_API
-	./hello
+	./Homeworks/TaskStoreAPI
 )
