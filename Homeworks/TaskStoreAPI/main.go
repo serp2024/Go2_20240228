@@ -33,8 +33,8 @@ func zDBinit() *ztDB {
 
 func (zDB ztDB) zTaskGetAll(w http.ResponseWriter, r *http.Request) {
 	zLog("zGetTasksAll ")
-
-	allTasks := zDB.zStore.GetAllTasks()
+ 
+	allTasks := zDB.zStore.GetAllTasks() 
 	js, err := json.Marshal(allTasks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
