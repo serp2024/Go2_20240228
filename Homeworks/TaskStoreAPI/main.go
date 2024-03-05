@@ -33,8 +33,8 @@ func zDBinit() *ztDB {
 
 func (zDB ztDB) zTaskGetAll(w http.ResponseWriter, r *http.Request) {
 	zLog("zGetTasksAll ")
- 
-	allTasks := zDB.zStore.GetAllTasks() 
+
+	allTasks := zDB.zStore.GetAllTasks()
 	js, err := json.Marshal(allTasks)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -73,33 +73,20 @@ func (zDB ztDB) zTaskCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	zBody, _ := io.ReadAll(r.Body)
-	//	zLog("zBody=" + string(zBody) + "; ")
 	if err := json.Unmarshal([]byte(zBody), &zReqData); err != nil {
 		zErrorResponse(w, err.Error(), http.StatusBadRequest)
-		// fmt.Println("Error: ", err)
 	}
 
-	//	fmt.Print("zReqData=", zReqData, "; ")
-
-	//zReqData.DisallowUnknownFields()
-	// var zRT RequestTask
-	// if err := zReqData.Decode(&zRT); err != nil {
-	// 	http.Error(w, err.Error(), http.StatusBadRequest)
-	// 	return
-	// }
 	zTime, err := time.Parse(time.RFC3339, zReqData.Due)
 	if err != nil {
 		zErrorResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	//zLog("time1=" + zReqData.Due + "; ")
-	//zLog("time2=" + zTime.String() + "; ")
 
 	zTaskId := zDB.zStore.CreateTask(zReqData.Text, zReqData.Tags, zTime)
 	zRes, err := json.Marshal(ResponseId{Id: zTaskId})
 	if err != nil {
 		zErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
